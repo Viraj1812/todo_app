@@ -3,21 +3,17 @@ class TODO {
   String? desc;
 
   TODO({
-    this.title,
-    this.desc,
+    required this.title,
+    required this.desc,
   });
 
-  toJson() {
-    return {
-      'title': title,
-      'desc': desc,
-    };
-  }
+  factory TODO.fromJson(Map<String, dynamic> json) => TODO(
+        title: json["title"] ?? '',
+        desc: json["desc"] ?? '',
+      );
 
-  fromJson(jsonData) {
-    return TODO(
-      title: jsonData['title'] ?? '',
-      desc: jsonData['desc'] ?? '',
-    );
-  }
+  Map<String, dynamic> toJson() => {
+        "title": title,
+        "desc": desc,
+      };
 }

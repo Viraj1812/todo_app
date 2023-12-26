@@ -188,17 +188,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void setupTodo() async {
     prefs = await SharedPreferences.getInstance();
-    String? stringTodo = prefs.getString('todo');
-    List todoList = jsonDecode(stringTodo!);
-    for (var todo in todoList) {
-      setState(() {
-        list.add(TODO().fromJson(todo));
-      });
+    List<String>? todoList = prefs.getStringList('todo');
+    if (todoList != null) {
+      list = todoList.map((e) => TODO.fromJson(json.decode(e))).toList();
     }
+    setState(() {});
   }
 
   void saveTodo() {
-    List items = list.map((e) => e.toJson()).toList();
-    prefs.setString('todo', jsonEncode(items));
+    List<String> todoList = list.map((e) => jsonEncode(e.toJson())).toList();
+    prefs.setStringList('todo', todoList);
   }
 }
