@@ -105,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return AlertDialog(
           title: const Text('Edit Todo'),
           content: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: titleController,

@@ -72,7 +72,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               desc: descriptionController.text,
             );
             Navigator.pop(context, newTask);
-            // widget.handleState(newTask);
           },
           child: const Text('Add Todo'),
         ),
