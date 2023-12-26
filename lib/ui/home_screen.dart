@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/model/todo_model.dart';
 import 'package:todo_app/ui/add_task_screen.dart';
 
@@ -12,6 +15,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<TODO> list = [];
+  late SharedPreferences _prefs;
+
+  SharedPreferences get prefs => _prefs;
+
+  set prefs(SharedPreferences value) {
+    _prefs = value;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setupTodo();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text(
           'TODO APP',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: GoogleFonts.montserrat(
             fontSize: 18,
             color: Colors.white,
@@ -32,9 +50,9 @@ class _HomeScreenState extends State<HomeScreen> {
         itemCount: list.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(list[index].title),
+            title: Text(list[index].title!),
             subtitle: Text(
-              _description(list[index].desc),
+              list[index].desc!,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -67,13 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  String _description(String description) {
-    const maxLength = 30;
-    return description.length <= maxLength
-        ? description
-        : '${description.substring(0, maxLength)}...';
-  }
-
   void _navigateToAddTodoScreen() {
     Navigator.push(
       context,
@@ -84,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (value != null) {
         handleState(value);
       }
+      saveTodo();
     });
   }
 
@@ -91,6 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       list.add(item);
     });
+    saveTodo();
   }
 
   void _editTodo(int index) {
@@ -132,6 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   list[index].title = titleController.text;
                   list[index].desc = descriptionController.text;
                 });
+                saveTodo();
                 Navigator.pop(context);
               },
               child: const Text('Save'),
@@ -161,6 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 setState(() {
                   list.removeAt(index);
                 });
+                saveTodo();
                 Navigator.pop(context);
               },
               child: const Text('Delete'),
@@ -169,5 +184,21 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       },
     );
+  }
+
+  void setupTodo() async {
+    prefs = await SharedPreferences.getInstance();
+    String? stringTodo = prefs.getString('todo');
+    List todoList = jsonDecode(stringTodo!);
+    for (var todo in todoList) {
+      setState(() {
+        list.add(TODO().fromJson(todo));
+      });
+    }
+  }
+
+  void saveTodo() {
+    List items = list.map((e) => e.toJson()).toList();
+    prefs.setString('todo', jsonEncode(items));
   }
 }

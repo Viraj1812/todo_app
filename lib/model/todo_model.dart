@@ -1,9 +1,23 @@
 class TODO {
-  String title;
-  String desc;
+  String? title;
+  String? desc;
 
   TODO({
-    required this.title,
-    required this.desc,
+    this.title,
+    this.desc,
   });
+
+  toJson() {
+    return {
+      'title': title,
+      'desc': desc,
+    };
+  }
+
+  fromJson(jsonData) {
+    return TODO(
+      title: jsonData['title'],
+      desc: jsonData['desc'],
+    );
+  }
 }
