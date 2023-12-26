@@ -41,25 +41,26 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       ),
       body: Column(children: [
         Card(
+          margin: const EdgeInsets.all(16),
           child: Container(
             padding: const EdgeInsets.all(8),
             margin: const EdgeInsets.all(8),
             child: TextField(
               controller: titleController,
-              decoration: const InputDecoration(hintText: 'Enter title'),
+              decoration: const InputDecoration(
+                  hintText: 'Enter title', border: InputBorder.none),
             ),
           ),
         ),
-        const SizedBox(
-          height: 40,
-        ),
         Card(
+          margin: const EdgeInsets.all(16),
           child: Container(
             padding: const EdgeInsets.all(8),
             margin: const EdgeInsets.all(8),
             child: TextField(
               controller: descriptionController,
-              decoration: const InputDecoration(hintText: 'Enter description'),
+              decoration: const InputDecoration(
+                  hintText: 'Enter description', border: InputBorder.none),
               maxLines: 4,
             ),
           ),
