@@ -16,8 +16,8 @@ class TODO {
 
   fromJson(jsonData) {
     return TODO(
-      title: jsonData['title'],
-      desc: jsonData['desc'],
+      title: jsonData['title'] ?? '',
+      desc: jsonData['desc'] ?? '',
     );
   }
 }
