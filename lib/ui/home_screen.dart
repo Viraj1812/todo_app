@@ -47,38 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: false,
         backgroundColor: const Color.fromARGB(255, 211, 176, 255),
       ),
-      body:
-          // ListView.builder(
-          //   itemCount: list.length,
-          //   itemBuilder: (context, index) {
-          //     return ListTile(
-          //       title: Text(list[index].title!),
-          //       subtitle: Text(
-          //         list[index].desc!,
-          //         maxLines: 1,
-          //         overflow: TextOverflow.ellipsis,
-          //       ),
-          //       trailing: Row(
-          //         mainAxisSize: MainAxisSize.min,
-          //         children: [
-          //           IconButton(
-          //             onPressed: () {
-          //               _editTodo(index);
-          //             },
-          //             icon: const Icon(Icons.edit),
-          //           ),
-          //           IconButton(
-          //             onPressed: () {
-          //               _deleteTodo(index);
-          //             },
-          //             icon: const Icon(Icons.delete),
-          //           )
-          //         ],
-          //       ),
-          //     );
-          //   },
-          // ),
-          ValueListenableBuilder(
+      body: ValueListenableBuilder(
         valueListenable: listNotifier,
         builder: (context, value, child) {
           return ListView.builder(
@@ -228,7 +197,6 @@ class _HomeScreenState extends State<HomeScreen> {
       listNotifier.value =
           todoList.map((e) => TODO.fromJson(json.decode(e))).toList();
     }
-    // setState(() {});
   }
 
   void saveTodo() {
