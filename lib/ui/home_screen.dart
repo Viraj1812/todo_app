@@ -14,7 +14,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<TODO> list = [];
+  ValueNotifier<List<TODO>> listNotifier = ValueNotifier<List<TODO>>([]);
+  // List<TODO> list = [];
   late SharedPreferences _prefs;
 
   SharedPreferences get prefs => _prefs;
@@ -46,33 +47,69 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: false,
         backgroundColor: const Color.fromARGB(255, 211, 176, 255),
       ),
-      body: ListView.builder(
-        itemCount: list.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(list[index].title!),
-            subtitle: Text(
-              list[index].desc!,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  onPressed: () {
-                    _editTodo(index);
-                  },
-                  icon: const Icon(Icons.edit),
+      body:
+          // ListView.builder(
+          //   itemCount: list.length,
+          //   itemBuilder: (context, index) {
+          //     return ListTile(
+          //       title: Text(list[index].title!),
+          //       subtitle: Text(
+          //         list[index].desc!,
+          //         maxLines: 1,
+          //         overflow: TextOverflow.ellipsis,
+          //       ),
+          //       trailing: Row(
+          //         mainAxisSize: MainAxisSize.min,
+          //         children: [
+          //           IconButton(
+          //             onPressed: () {
+          //               _editTodo(index);
+          //             },
+          //             icon: const Icon(Icons.edit),
+          //           ),
+          //           IconButton(
+          //             onPressed: () {
+          //               _deleteTodo(index);
+          //             },
+          //             icon: const Icon(Icons.delete),
+          //           )
+          //         ],
+          //       ),
+          //     );
+          //   },
+          // ),
+          ValueListenableBuilder(
+        valueListenable: listNotifier,
+        builder: (context, value, child) {
+          return ListView.builder(
+            itemCount: listNotifier.value.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(listNotifier.value[index].title!),
+                subtitle: Text(
+                  listNotifier.value[index].desc!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                IconButton(
-                  onPressed: () {
-                    _deleteTodo(index);
-                  },
-                  icon: const Icon(Icons.delete),
-                )
-              ],
-            ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        _editTodo(index);
+                      },
+                      icon: const Icon(Icons.edit),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        _deleteTodo(index);
+                      },
+                      icon: const Icon(Icons.delete),
+                    )
+                  ],
+                ),
+              );
+            },
           );
         },
       ),
@@ -100,9 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void handleState(TODO item) {
-    setState(() {
-      list.add(item);
-    });
+    listNotifier.value = List.of(listNotifier.value)..add(item);
     saveTodo();
   }
 
@@ -111,9 +146,9 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (BuildContext context) {
         TextEditingController titleController =
-            TextEditingController(text: list[index].title);
+            TextEditingController(text: listNotifier.value[index].title);
         TextEditingController descriptionController =
-            TextEditingController(text: list[index].desc);
+            TextEditingController(text: listNotifier.value[index].desc);
 
         return AlertDialog(
           title: const Text('Edit Todo'),
@@ -141,10 +176,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             TextButton(
               onPressed: () {
-                setState(() {
-                  list[index].title = titleController.text;
-                  list[index].desc = descriptionController.text;
-                });
+                listNotifier.value = List.of(listNotifier.value)
+                  ..[index].title = titleController.text;
+                listNotifier.value = List.of(listNotifier.value)
+                  ..[index].desc = descriptionController.text;
+                ;
                 saveTodo();
                 Navigator.pop(context);
               },
@@ -172,9 +208,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             TextButton(
               onPressed: () {
-                setState(() {
-                  list.removeAt(index);
-                });
+                listNotifier.value = List.of(listNotifier.value)
+                  ..removeAt(index);
                 saveTodo();
                 Navigator.pop(context);
               },
@@ -190,13 +225,15 @@ class _HomeScreenState extends State<HomeScreen> {
     prefs = await SharedPreferences.getInstance();
     List<String>? todoList = prefs.getStringList('todo');
     if (todoList != null) {
-      list = todoList.map((e) => TODO.fromJson(json.decode(e))).toList();
+      listNotifier.value =
+          todoList.map((e) => TODO.fromJson(json.decode(e))).toList();
     }
-    setState(() {});
+    // setState(() {});
   }
 
   void saveTodo() {
-    List<String> todoList = list.map((e) => jsonEncode(e.toJson())).toList();
+    List<String> todoList =
+        listNotifier.value.map((e) => jsonEncode(e.toJson())).toList();
     prefs.setStringList('todo', todoList);
   }
 }
